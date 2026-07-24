@@ -4,8 +4,10 @@ import org.example.model.Empresa;
 import org.example.model.Plano;
 import org.example.service.EmpresaService;
 import org.example.service.PlanoService;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.math.BigDecimal;
 
@@ -21,25 +23,49 @@ public class PlanoFormFrame extends JFrame {
         this.parent = parent;
 
         setTitle(plano == null ? "Novo Plano" : "Editar Plano");
-        setSize(400, 300);
+        setSize(500, 420);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(5, 2));
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
+
+        add(UITheme.headerBar(plano == null ? "Novo Plano" : "Editar Plano",
+                "Configure o plano vinculado à empresa"), BorderLayout.NORTH);
 
         JTextField nome = new JTextField();
         JTextField valor = new JTextField();
         JComboBox<Empresa> empresaBox = new JComboBox<>();
+        UITheme.styleTextField(nome);
+        UITheme.styleTextField(valor);
+        UITheme.styleComboBox(empresaBox);
         for (Empresa e : empresaService.listar()) empresaBox.addItem(e);
 
-        JButton salvar = new JButton("Salvar");
+        JButton salvar = UITheme.successButton("💾  Salvar");
 
-        add(new JLabel("Nome:"));
-        add(nome);
-        add(new JLabel("Valor:"));
-        add(valor);
-        add(new JLabel("Empresa:"));
-        add(empresaBox);
-        add(new JLabel());
-        add(salvar);
+        JPanel card = UITheme.card(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(4, 0, 4, 0);
+        int y = 0;
+        gbc.gridy = y++; card.add(UITheme.formLabel("Nome:"), gbc);
+        gbc.gridy = y++; card.add(nome, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Valor:"), gbc);
+        gbc.gridy = y++; card.add(valor, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Empresa:"), gbc);
+        gbc.gridy = y++; card.add(empresaBox, gbc);
+        gbc.gridy = y++;
+        gbc.insets = new Insets(14, 0, 4, 0);
+        card.add(salvar, gbc);
+
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(UITheme.BG);
+        wrapper.setBorder(new EmptyBorder(16, 24, 16, 24));
+        GridBagConstraints wc = new GridBagConstraints();
+        wc.fill = GridBagConstraints.HORIZONTAL;
+        wc.weightx = 1.0;
+        wrapper.add(card, wc);
+        add(wrapper, BorderLayout.CENTER);
 
         if (plano != null) {
             nome.setText(plano.getNome());

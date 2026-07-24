@@ -2,8 +2,10 @@ package org.example.swing.usuarios;
 
 import org.example.model.Usuario;
 import org.example.service.UsuarioService;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
@@ -15,22 +17,34 @@ public class UsuarioListaFrame extends JFrame {
 
     public UsuarioListaFrame() {
         setTitle("Usuários");
-        setSize(800, 400);
+        setSize(900, 500);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
 
-        JButton btnNovo = new JButton("Novo Usuário");
-        JButton btnEditar = new JButton("Editar");
-        JButton btnExcluir = new JButton("Excluir");
+        add(UITheme.headerBar("Gerenciar Usuários", "Cadastre, edite ou remova usuários do sistema"),
+                BorderLayout.NORTH);
 
-        JPanel topo = new JPanel();
+        JButton btnNovo    = UITheme.successButton("➕  Novo Usuário");
+        JButton btnEditar  = UITheme.primaryButton("✎  Editar");
+        JButton btnExcluir = UITheme.dangerButton("🗑  Excluir");
+
+        JPanel topo = UITheme.toolbar();
         topo.add(btnNovo);
         topo.add(btnEditar);
         topo.add(btnExcluir);
-        add(topo, BorderLayout.NORTH);
 
         tabela = new JTable();
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+        UITheme.styleTable(tabela);
+        JScrollPane sp = new JScrollPane(tabela);
+        sp.setBorder(new EmptyBorder(0, 16, 16, 16));
+        sp.getViewport().setBackground(UITheme.CARD_BG);
+
+        JPanel body = new JPanel(new BorderLayout());
+        body.setBackground(UITheme.BG);
+        body.add(topo, BorderLayout.NORTH);
+        body.add(sp, BorderLayout.CENTER);
+        add(body, BorderLayout.CENTER);
 
         carregarTabela();
 
@@ -79,5 +93,6 @@ public class UsuarioListaFrame extends JFrame {
         }
 
         tabela.setModel(model);
+        UITheme.styleTable(tabela);
     }
 }

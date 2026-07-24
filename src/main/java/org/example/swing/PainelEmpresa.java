@@ -12,8 +12,10 @@ import org.example.swing.cartoes.CartaoListaFrame;
 import org.example.swing.planos.PlanoAdminFormFrame;
 import org.example.swing.planos.PlanoListaFrame;
 import org.example.swing.transacoes.TransacaoListaFrame;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 
@@ -25,10 +27,11 @@ public class PainelEmpresa extends JFrame {
 
     public PainelEmpresa() {
         setTitle("Painel da Empresa");
-        setSize(800, 600);
+        setSize(900, 620);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
 
         Empresa empresa = SessionContext.getEmpresaLogada();
         if (empresa == null) {
@@ -38,12 +41,19 @@ public class PainelEmpresa extends JFrame {
             return;
         }
 
-        JLabel info = new JLabel("Empresa: " + empresa.getNome(), SwingConstants.CENTER);
-        add(info, BorderLayout.NORTH);
+        add(UITheme.headerBar("Empresa: " + empresa.getNome(),
+                "Gerencie seus planos, cartões emitidos e transações"), BorderLayout.NORTH);
 
         DefaultListModel<String> model = new DefaultListModel<>();
         JList<String> lista = new JList<>(model);
-        add(new JScrollPane(lista), BorderLayout.CENTER);
+        lista.setFont(UITheme.FONT_BASE);
+        lista.setBackground(UITheme.CARD_BG);
+        lista.setBorder(new EmptyBorder(10, 12, 10, 12));
+
+        JScrollPane scroll = new JScrollPane(lista);
+        scroll.setBorder(new EmptyBorder(0, 20, 0, 20));
+        scroll.getViewport().setBackground(UITheme.CARD_BG);
+        add(scroll, BorderLayout.CENTER);
 
         model.addElement("=== Planos da Empresa ===");
         List<Plano> planos = planoService.findByEmpresa(empresa);
@@ -61,12 +71,12 @@ public class PainelEmpresa extends JFrame {
             model.addElement("Transação: " + t.getDescricao() + " | Valor: " + t.getValor() + " | Cartão: " + t.getCartao().getNumero());
         }
 
-        JPanel botoes = new JPanel(new GridLayout(1, 5));
-        JButton btnMeusPlanos = new JButton("Meus Planos");
-        JButton btnCriarPlano = new JButton("Criar Plano");
-        JButton btnCartoes = new JButton("Cartões");
-        JButton btnTransacoes = new JButton("Transações");
-        JButton btnSair = new JButton("Sair");
+        JPanel botoes = UITheme.footerBar();
+        JButton btnMeusPlanos  = UITheme.primaryButton("📋  Meus Planos");
+        JButton btnCriarPlano  = UITheme.successButton("➕  Criar Plano");
+        JButton btnCartoes     = UITheme.primaryButton("💳  Cartões");
+        JButton btnTransacoes  = UITheme.primaryButton("💰  Transações");
+        JButton btnSair        = UITheme.dangerButton("↩  Sair");
 
         btnMeusPlanos.addActionListener(e -> new PlanoListaFrame().setVisible(true));
         btnCriarPlano.addActionListener(e -> new PlanoAdminFormFrame().setVisible(true));

@@ -1,7 +1,6 @@
 package org.example.swing.usuarios;
 
 import org.example.model.Empresa;
-import org.example.model.Plano;
 import org.example.model.Usuario;
 import org.example.model.enums.Role;
 import org.example.security.PasswordUtil;
@@ -10,10 +9,11 @@ import org.example.service.EmpresaService;
 import org.example.service.PlanoService;
 import org.example.service.UsuarioService;
 import org.example.session.SessionContext;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.List;
 
 public class UsuarioFormFrame extends JFrame {
 
@@ -21,30 +21,37 @@ public class UsuarioFormFrame extends JFrame {
     private final PlanoService planoService = new PlanoService();
     private final Usuario usuario;
     private final UsuarioListaFrame parent;
-private final CartaoService cartaoService = new CartaoService();
+    private final CartaoService cartaoService = new CartaoService();
 
     public UsuarioFormFrame(Usuario usuario, UsuarioListaFrame parent) {
         this.usuario = usuario;
         this.parent = parent;
 
         setTitle(usuario == null ? "Novo Usuário" : "Editar Usuário");
-        setSize(400, 350);
+        setSize(520, 540);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(7, 2));
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
+
+        add(UITheme.headerBar(usuario == null ? "Novo Usuário" : "Editar Usuário",
+                "Informe os dados do usuário"), BorderLayout.NORTH);
 
         JTextField nomeField = new JTextField();
         JTextField loginField = new JTextField();
         JPasswordField senhaField = new JPasswordField();
+        UITheme.styleTextField(nomeField);
+        UITheme.styleTextField(loginField);
+        UITheme.styleTextField(senhaField);
 
         JComboBox<String> roleBox = new JComboBox<>(new String[]{"ADMIN", "EMPRESA", "USUARIO"});
-        //JComboBox<Plano> planoBox = new JComboBox<>();
         JComboBox<String> statusBox = new JComboBox<>(new String[]{"ATIVO", "INATIVO"});
         JComboBox<Empresa> empresaBox = new JComboBox<>();
+        UITheme.styleComboBox(roleBox);
+        UITheme.styleComboBox(statusBox);
+        UITheme.styleComboBox(empresaBox);
         for (Empresa e : new EmpresaService().listar()) empresaBox.addItem(e);
-        //List<Plano> planos = planoService.listar();
-        //for (Plano p : planos) planoBox.addItem(p);
 
-        JButton btnGerarCartao = new JButton("Gerar Cartão Social");
+        JButton btnGerarCartao = UITheme.secondaryButton("Gerar Cartão Social");
         btnGerarCartao.addActionListener(e -> {
             Usuario u = SessionContext.getCurrentUser();
             if (u.getPlano() == null) {
@@ -54,34 +61,44 @@ private final CartaoService cartaoService = new CartaoService();
             cartaoService.emitirCartaoSocial(u, u.getPlano());
             JOptionPane.showMessageDialog(this, "Cartão gerado com sucesso!");
         });
-        JButton salvar = new JButton("Salvar");
+        JButton salvar = UITheme.successButton("💾  Salvar");
 
         roleBox.addActionListener(e -> {
             String role = roleBox.getSelectedItem().toString();
             empresaBox.setEnabled("EMPRESA".equals(role));
         });
 
-        add(new JLabel("Nome:"));
-        add(nomeField);
-        add(new JLabel("Login:"));
-        add(loginField);
-        add(new JLabel("Senha:"));
-        add(senhaField);
-        add(new JLabel("Role:"));
-        add(roleBox);
-        //add(new JLabel("Plano:"));
-        //add(planoBox);
-        add(new JLabel("Status:"));
-        add(statusBox);
-        add(new JLabel("Empresa:"));
-        add(empresaBox);
-        add(new JLabel());
-        add(salvar);
-        //if ("EMPRESA".equals(roleBox.getSelectedItem().toString())) {
-        //    usuario.setEmpresa((Empresa) empresaBox.getSelectedItem());
-        //} else {
-        //    usuario.setEmpresa(null);
-        //}
+        JPanel card = UITheme.card(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(4, 0, 4, 0);
+        int y = 0;
+        gbc.gridy = y++; card.add(UITheme.formLabel("Nome:"), gbc);
+        gbc.gridy = y++; card.add(nomeField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Login:"), gbc);
+        gbc.gridy = y++; card.add(loginField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Senha:"), gbc);
+        gbc.gridy = y++; card.add(senhaField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Role:"), gbc);
+        gbc.gridy = y++; card.add(roleBox, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Status:"), gbc);
+        gbc.gridy = y++; card.add(statusBox, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Empresa:"), gbc);
+        gbc.gridy = y++; card.add(empresaBox, gbc);
+        gbc.gridy = y++;
+        gbc.insets = new Insets(14, 0, 4, 0);
+        card.add(salvar, gbc);
+
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(UITheme.BG);
+        wrapper.setBorder(new EmptyBorder(16, 24, 16, 24));
+        GridBagConstraints wc = new GridBagConstraints();
+        wc.fill = GridBagConstraints.HORIZONTAL;
+        wc.weightx = 1.0;
+        wrapper.add(card, wc);
+        add(wrapper, BorderLayout.CENTER);
 
         if (usuario != null) {
             nomeField.setText(usuario.getNome());
@@ -89,8 +106,6 @@ private final CartaoService cartaoService = new CartaoService();
             roleBox.setSelectedItem(usuario.getRole().toString());
             statusBox.setSelectedItem(usuario.getStatus());
             if (usuario.getEmpresa() != null) empresaBox.setSelectedItem(usuario.getEmpresa());
-            //if (usuario.getPlano() != null)
-             //   planoBox.setSelectedItem(usuario.getPlano());
         }
 
         salvar.addActionListener(e -> {

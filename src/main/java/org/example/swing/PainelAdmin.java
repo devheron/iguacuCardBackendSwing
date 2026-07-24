@@ -1,9 +1,11 @@
 package org.example.swing;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import org.example.swing.planos.PlanoAdminFormFrame;
+import org.example.swing.ui.UITheme;
 import org.example.swing.usuarios.UsuarioListaFrame;
 import org.example.swing.empresas.EmpresaListaFrame;
 import org.example.swing.planos.PlanoListaFrame;
@@ -16,43 +18,48 @@ public class PainelAdmin extends JFrame {
     public PainelAdmin() {
 
         setTitle("Painel Administrativo");
-        setSize(500, 400);
+        setSize(720, 560);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLayout(new GridLayout(6, 1));
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
 
-        JButton btnUsuarios = new JButton("Gerenciar Usuários");
-        JButton btnEmpresas = new JButton("Gerenciar Empresas");
-        JButton btnPlanos = new JButton("Gerenciar Planos");
-        JButton btnCriarPlano = new JButton("Criar Plano");
+        add(UITheme.headerBar("Painel Administrativo", "Gerencie todos os módulos do IguaçuCard"), BorderLayout.NORTH);
+
+        JButton btnUsuarios   = UITheme.primaryButton("👤   Gerenciar Usuários");
+        JButton btnEmpresas   = UITheme.primaryButton("🏢   Gerenciar Empresas");
+        JButton btnPlanos     = UITheme.primaryButton("📋   Gerenciar Planos");
+        JButton btnCriarPlano = UITheme.successButton("➕   Criar Plano");
+        JButton btnBeneficios = UITheme.primaryButton("🎁   Gerenciar Benefícios");
+        JButton btnCartoes    = UITheme.primaryButton("💳   Cartões dos Usuários");
+        JButton btnTransacoes = UITheme.primaryButton("💰   Transações");
+        JButton btnVoltar     = UITheme.dangerButton("↩   Sair / Voltar ao Login");
+
         btnCriarPlano.addActionListener(e -> new PlanoAdminFormFrame().setVisible(true));
-        add(btnCriarPlano);
-        JButton btnBeneficios = new JButton("Gerenciar Benefícios");
-        JButton btnCartoes = new JButton("Cartões dos Usuários");
-        JButton btnTransacoes = new JButton("Transações");
-
-
-
-        add(btnUsuarios);
-        add(btnEmpresas);
-        add(btnPlanos);
-        add(btnBeneficios);
-        add(btnCartoes);
-        add(btnTransacoes);
-
         btnUsuarios.addActionListener(e -> new UsuarioListaFrame().setVisible(true));
         btnEmpresas.addActionListener(e -> new EmpresaListaFrame().setVisible(true));
         btnPlanos.addActionListener(e -> new PlanoListaFrame().setVisible(true));
         btnBeneficios.addActionListener(e -> new BeneficioListaFrame().setVisible(true));
         btnCartoes.addActionListener(e -> new CartaoListaFrame().setVisible(true));
         btnTransacoes.addActionListener(e -> new TransacaoListaFrame().setVisible(true));
-
-        JButton btnVoltar = new JButton("Voltar");
         btnVoltar.addActionListener(e -> {
+            org.example.session.SessionContext.logout();
             dispose();
             new LoginFrame().setVisible(true);
         });
-        add(btnVoltar, BorderLayout.SOUTH);
 
+        JPanel grid = new JPanel(new GridLayout(4, 2, 14, 14));
+        grid.setOpaque(false);
+        grid.setBorder(new EmptyBorder(24, 24, 12, 24));
+        grid.add(btnUsuarios);
+        grid.add(btnEmpresas);
+        grid.add(btnPlanos);
+        grid.add(btnCriarPlano);
+        grid.add(btnBeneficios);
+        grid.add(btnCartoes);
+        grid.add(btnTransacoes);
+        grid.add(btnVoltar);
+
+        add(grid, BorderLayout.CENTER);
     }
 }

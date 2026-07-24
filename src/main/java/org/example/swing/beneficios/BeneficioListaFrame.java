@@ -2,8 +2,10 @@ package org.example.swing.beneficios;
 
 import org.example.model.Beneficio;
 import org.example.service.BeneficioService;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
@@ -15,24 +17,36 @@ public class BeneficioListaFrame extends JFrame {
     public BeneficioListaFrame() {
 
         setTitle("Benefícios");
-        setSize(700,400);
+        setSize(820, 500);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
 
-        JPanel topo = new JPanel();
-        JButton novo = new JButton("Novo Benefício");
-        JButton editar = new JButton("Editar");
-        JButton excluir = new JButton("Excluir");
+        add(UITheme.headerBar("Benefícios", "Benefícios oferecidos por cada plano"),
+                BorderLayout.NORTH);
+
+        JPanel topo = UITheme.toolbar();
+        JButton novo    = UITheme.successButton("➕  Novo Benefício");
+        JButton editar  = UITheme.primaryButton("✎  Editar");
+        JButton excluir = UITheme.dangerButton("🗑  Excluir");
 
         topo.add(novo);
         topo.add(editar);
         topo.add(excluir);
 
         tabela = new JTable();
+        UITheme.styleTable(tabela);
         carregar();
 
-        add(topo, BorderLayout.NORTH);
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+        JScrollPane sp = new JScrollPane(tabela);
+        sp.setBorder(new EmptyBorder(0, 16, 16, 16));
+        sp.getViewport().setBackground(UITheme.CARD_BG);
+
+        JPanel body = new JPanel(new BorderLayout());
+        body.setBackground(UITheme.BG);
+        body.add(topo, BorderLayout.NORTH);
+        body.add(sp, BorderLayout.CENTER);
+        add(body, BorderLayout.CENTER);
 
         novo.addActionListener(e -> new BeneficioFormFrame(null,this).setVisible(true));
 
@@ -66,5 +80,6 @@ public class BeneficioListaFrame extends JFrame {
             });
         }
         tabela.setModel(m);
+        UITheme.styleTable(tabela);
     }
 }

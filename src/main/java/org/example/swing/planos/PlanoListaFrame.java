@@ -7,8 +7,10 @@ import org.example.service.CartaoService;
 import org.example.service.UsuarioService;
 import org.example.session.SessionContext;
 import org.example.swing.LoginFrame;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
@@ -21,22 +23,36 @@ public class PlanoListaFrame extends JFrame {
 
     public PlanoListaFrame() {
         setTitle("Planos disponíveis");
-        setSize(800, 400);
+        setSize(900, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout(6, 6));
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
+
+        add(UITheme.headerBar("Planos disponíveis", "Visualize e contrate planos oferecidos pelas empresas"),
+                BorderLayout.NORTH);
 
         tabela = new JTable();
-        JButton btnCarregar = new JButton("Atualizar");
-        JButton btnContratar = new JButton("Contratar plano selecionado");
-        JButton btnVoltar = new JButton("Voltar");
+        UITheme.styleTable(tabela);
 
-        JPanel topo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton btnCarregar  = UITheme.secondaryButton("↻  Atualizar");
+        JButton btnContratar = UITheme.successButton("✓  Contratar plano selecionado");
+        JButton btnVoltar    = UITheme.dangerButton("↩  Voltar");
+
+        JPanel topo = UITheme.toolbar();
         topo.add(btnCarregar);
         topo.add(btnContratar);
         topo.add(btnVoltar);
-        add(topo, BorderLayout.NORTH);
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+
+        JScrollPane sp = new JScrollPane(tabela);
+        sp.setBorder(new EmptyBorder(0, 16, 16, 16));
+        sp.getViewport().setBackground(UITheme.CARD_BG);
+
+        JPanel body = new JPanel(new BorderLayout());
+        body.setBackground(UITheme.BG);
+        body.add(topo, BorderLayout.NORTH);
+        body.add(sp, BorderLayout.CENTER);
+        add(body, BorderLayout.CENTER);
 
         btnCarregar.addActionListener(e -> carregar());
         btnContratar.addActionListener(e -> contratarPlano());
@@ -61,6 +77,7 @@ public class PlanoListaFrame extends JFrame {
             model.addRow(row);
         }
         tabela.setModel(model);
+        UITheme.styleTable(tabela);
     }
 
     private void contratarPlano() {

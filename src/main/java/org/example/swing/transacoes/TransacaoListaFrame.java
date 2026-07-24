@@ -1,12 +1,12 @@
 package org.example.swing.transacoes;
 
 import org.example.model.Transacao;
-import org.example.model.Usuario;
-import org.example.model.Empresa;
 import org.example.service.TransacaoService;
 import org.example.session.SessionContext;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
@@ -18,13 +18,22 @@ public class TransacaoListaFrame extends JFrame {
 
     public TransacaoListaFrame() {
         setTitle("Transações");
-        setSize(700, 400);
+        setSize(900, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
+
+        add(UITheme.headerBar("Transações", "Movimentações financeiras dos cartões emitidos"),
+                BorderLayout.NORTH);
 
         tabela = new JTable();
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+        UITheme.styleTable(tabela);
+
+        JScrollPane sp = new JScrollPane(tabela);
+        sp.setBorder(new EmptyBorder(16, 16, 16, 16));
+        sp.getViewport().setBackground(UITheme.CARD_BG);
+        add(sp, BorderLayout.CENTER);
 
         carregarTabela();
     }
@@ -54,5 +63,6 @@ public class TransacaoListaFrame extends JFrame {
         }
 
         tabela.setModel(model);
+        UITheme.styleTable(tabela);
     }
 }

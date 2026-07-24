@@ -4,8 +4,10 @@ import org.example.model.Empresa;
 import org.example.model.Plano;
 import org.example.service.EmpresaService;
 import org.example.service.PlanoService;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,18 +19,24 @@ public class PlanoAdminFormFrame extends JFrame {
 
     public PlanoAdminFormFrame() {
         setTitle("Criar Plano");
-        setSize(400, 300);
+        setSize(520, 480);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(5, 2));
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
+
+        add(UITheme.headerBar("Criar Plano", "Cadastre um novo plano vinculado a uma empresa"),
+                BorderLayout.NORTH);
 
         JTextField nomeField = new JTextField();
         JTextField descricaoField = new JTextField();
         JTextField precoField = new JTextField();
         JComboBox<Empresa> empresaBox = new JComboBox<>();
+        UITheme.styleTextField(nomeField);
+        UITheme.styleTextField(descricaoField);
+        UITheme.styleTextField(precoField);
+        UITheme.styleComboBox(empresaBox);
 
-       // for (Empresa e : empresaService.listar()) empresaBox.addItem(e);
-
-        JButton salvarBtn = new JButton("Salvar");
+        JButton salvarBtn = UITheme.successButton("💾  Salvar");
 
         List<Empresa> empresas = empresaService.listar();
         if (empresas.isEmpty()) {
@@ -40,16 +48,33 @@ public class PlanoAdminFormFrame extends JFrame {
             for (Empresa e : empresas) empresaBox.addItem(e);
         }
 
-        add(new JLabel("Nome:"));
-        add(nomeField);
-        add(new JLabel("Descrição:"));
-        add(descricaoField);
-        add(new JLabel("Preço:"));
-        add(precoField);
-        add(new JLabel("Empresa:"));
-        add(empresaBox);
-        add(new JLabel());
-        add(salvarBtn);
+        JPanel card = UITheme.card(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(4, 0, 4, 0);
+        int y = 0;
+        gbc.gridy = y++; card.add(UITheme.formLabel("Nome:"), gbc);
+        gbc.gridy = y++; card.add(nomeField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Descrição:"), gbc);
+        gbc.gridy = y++; card.add(descricaoField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Preço:"), gbc);
+        gbc.gridy = y++; card.add(precoField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Empresa:"), gbc);
+        gbc.gridy = y++; card.add(empresaBox, gbc);
+        gbc.gridy = y++;
+        gbc.insets = new Insets(14, 0, 4, 0);
+        card.add(salvarBtn, gbc);
+
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(UITheme.BG);
+        wrapper.setBorder(new EmptyBorder(16, 24, 16, 24));
+        GridBagConstraints wc = new GridBagConstraints();
+        wc.fill = GridBagConstraints.HORIZONTAL;
+        wc.weightx = 1.0;
+        wrapper.add(card, wc);
+        add(wrapper, BorderLayout.CENTER);
 
         salvarBtn.addActionListener(e -> {
             try {

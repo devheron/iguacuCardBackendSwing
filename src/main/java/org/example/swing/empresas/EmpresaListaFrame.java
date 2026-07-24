@@ -2,8 +2,10 @@ package org.example.swing.empresas;
 
 import org.example.model.Empresa;
 import org.example.service.EmpresaService;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
@@ -15,23 +17,34 @@ public class EmpresaListaFrame extends JFrame {
     public EmpresaListaFrame() {
 
         setTitle("Empresas");
-        setSize(700, 400);
+        setSize(820, 500);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
 
-        JPanel topo = new JPanel();
-        JButton novo = new JButton("Nova Empresa");
-        JButton editar = new JButton("Editar");
-        JButton excluir = new JButton("Excluir");
+        add(UITheme.headerBar("Empresas", "Cadastre e gerencie empresas parceiras"), BorderLayout.NORTH);
+
+        JPanel topo = UITheme.toolbar();
+        JButton novo    = UITheme.successButton("➕  Nova Empresa");
+        JButton editar  = UITheme.primaryButton("✎  Editar");
+        JButton excluir = UITheme.dangerButton("🗑  Excluir");
         topo.add(novo);
         topo.add(editar);
         topo.add(excluir);
 
         tabela = new JTable();
+        UITheme.styleTable(tabela);
         carregarTabela();
 
-        add(topo, BorderLayout.NORTH);
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+        JScrollPane sp = new JScrollPane(tabela);
+        sp.setBorder(new EmptyBorder(0, 16, 16, 16));
+        sp.getViewport().setBackground(UITheme.CARD_BG);
+
+        JPanel body = new JPanel(new BorderLayout());
+        body.setBackground(UITheme.BG);
+        body.add(topo, BorderLayout.NORTH);
+        body.add(sp, BorderLayout.CENTER);
+        add(body, BorderLayout.CENTER);
 
         novo.addActionListener(e -> new EmpresaFormFrame(null, this).setVisible(true));
 
@@ -65,5 +78,6 @@ public class EmpresaListaFrame extends JFrame {
         }
 
         tabela.setModel(model);
+        UITheme.styleTable(tabela);
     }
 }

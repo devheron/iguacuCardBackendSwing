@@ -6,8 +6,10 @@ import org.example.model.Usuario;
 import org.example.service.CartaoService;
 import org.example.service.PlanoService;
 import org.example.service.UsuarioService;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class CartaoFormFrame extends JFrame {
@@ -24,31 +26,56 @@ public class CartaoFormFrame extends JFrame {
         this.parent = parent;
 
         setTitle(c == null ? "Novo Cartão" : "Editar Cartão");
-        setSize(400,300);
+        setSize(520, 480);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(6,2));
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
+
+        add(UITheme.headerBar(c == null ? "Novo Cartão" : "Editar Cartão",
+                "Informe os dados do cartão social"), BorderLayout.NORTH);
 
         JTextField numero = new JTextField();
         JTextField validade = new JTextField();
-
         JComboBox<Usuario> usuarioBox = new JComboBox<>();
         JComboBox<Plano> planoBox = new JComboBox<>();
+
+        UITheme.styleTextField(numero);
+        UITheme.styleTextField(validade);
+        UITheme.styleComboBox(usuarioBox);
+        UITheme.styleComboBox(planoBox);
 
         for (Usuario u : usuarioService.listar()) usuarioBox.addItem(u);
         for (Plano p : planoService.listar()) planoBox.addItem(p);
 
-        JButton salvar = new JButton("Salvar");
+        JButton salvar = UITheme.successButton("💾  Salvar");
 
-        add(new JLabel("Número:"));
-        add(numero);
-        add(new JLabel("Validade:"));
-        add(validade);
-        add(new JLabel("Usuário:"));
-        add(usuarioBox);
-        add(new JLabel("Plano:"));
-        add(planoBox);
-        add(new JLabel());
-        add(salvar);
+        JPanel card = UITheme.card(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(4, 0, 4, 0);
+        int y = 0;
+        gbc.gridy = y++; card.add(UITheme.formLabel("Número:"), gbc);
+        gbc.gridy = y++; card.add(numero, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Validade:"), gbc);
+        gbc.gridy = y++; card.add(validade, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Usuário:"), gbc);
+        gbc.gridy = y++; card.add(usuarioBox, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Plano:"), gbc);
+        gbc.gridy = y++; card.add(planoBox, gbc);
+        gbc.gridy = y++;
+        gbc.insets = new Insets(14, 0, 4, 0);
+        card.add(salvar, gbc);
+
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(UITheme.BG);
+        wrapper.setBorder(new EmptyBorder(16, 24, 16, 24));
+        GridBagConstraints wc = new GridBagConstraints();
+        wc.fill = GridBagConstraints.HORIZONTAL;
+        wc.weightx = 1.0;
+        wrapper.add(card, wc);
+        add(wrapper, BorderLayout.CENTER);
 
         if (c != null) {
             numero.setText(c.getNumero());
@@ -74,4 +101,3 @@ public class CartaoFormFrame extends JFrame {
         });
     }
 }
-

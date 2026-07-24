@@ -5,8 +5,10 @@ import org.example.model.enums.Role;
 import org.example.model.Usuario;
 import org.example.service.AuthService;
 import org.example.DAO.EmpresaDAO;
+import org.example.swing.ui.UITheme;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class RegisterDialog extends JDialog {
@@ -15,44 +17,69 @@ public class RegisterDialog extends JDialog {
 
     public RegisterDialog(Frame owner) {
         super(owner, "Registrar Usuário", true);
-        setSize(350, 350);
+        setSize(480, 560);
         setLocationRelativeTo(owner);
-        setLayout(new GridLayout(10, 1));
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(UITheme.BG);
 
+        add(UITheme.headerBar("Cadastrar Usuário", "Crie sua conta para acessar o IguaçuCard"), BorderLayout.NORTH);
 
         JTextField loginField = new JTextField();
         JPasswordField senhaField = new JPasswordField();
         JTextField nomeField = new JTextField();
-
         JComboBox<Role> roleBox = new JComboBox<>(Role.values());
-
-        // Campo de empresa só quando necessário
         JTextField empresaField = new JTextField();
 
-        JButton salvarBtn = new JButton("Salvar");
+        UITheme.styleTextField(loginField);
+        UITheme.styleTextField(senhaField);
+        UITheme.styleTextField(nomeField);
+        UITheme.styleTextField(empresaField);
+        UITheme.styleComboBox(roleBox);
 
-        add(new JLabel("Login:"));
-        add(loginField);
+        JButton salvarBtn = UITheme.successButton("Salvar");
+        JButton btnVoltar = UITheme.secondaryButton("Voltar");
 
-        add(new JLabel("Senha:"));
-        add(senhaField);
+        JPanel card = UITheme.card(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(4, 0, 4, 0);
 
-        add(new JLabel("Nome:"));
-        add(nomeField);
+        int y = 0;
+        gbc.gridy = y++; card.add(UITheme.formLabel("Login:"), gbc);
+        gbc.gridy = y++; card.add(loginField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Senha:"), gbc);
+        gbc.gridy = y++; card.add(senhaField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Nome:"), gbc);
+        gbc.gridy = y++; card.add(nomeField, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Tipo de Conta:"), gbc);
+        gbc.gridy = y++; card.add(roleBox, gbc);
+        gbc.gridy = y++; card.add(UITheme.formLabel("Empresa (somente EMPRESA):"), gbc);
+        gbc.gridy = y++; card.add(empresaField, gbc);
 
-        add(new JLabel("Tipo de Conta:"));
-        add(roleBox);
+        JPanel botoes = new JPanel(new GridLayout(1, 2, 10, 0));
+        botoes.setOpaque(false);
+        botoes.add(salvarBtn);
+        botoes.add(btnVoltar);
 
-        add(new JLabel("Empresa (somente EMPRESA):"));
-        add(empresaField);
+        gbc.gridy = y++;
+        gbc.insets = new Insets(14, 0, 4, 0);
+        card.add(botoes, gbc);
 
-        add(salvarBtn);
-        JButton btnVoltar = new JButton("Voltar");
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(UITheme.BG);
+        wrapper.setBorder(new EmptyBorder(20, 30, 20, 30));
+        GridBagConstraints wc = new GridBagConstraints();
+        wc.fill = GridBagConstraints.HORIZONTAL;
+        wc.weightx = 1.0;
+        wrapper.add(card, wc);
+        add(wrapper, BorderLayout.CENTER);
+
         btnVoltar.addActionListener(e -> {
             dispose();
             new LoginFrame().setVisible(true);
         });
-        add(btnVoltar, BorderLayout.SOUTH);
 
         salvarBtn.addActionListener(e -> {
             try {
@@ -63,7 +90,6 @@ public class RegisterDialog extends JDialog {
                 u.setNome(nomeField.getText());
                 u.setRole((Role) roleBox.getSelectedItem());
 
-                // ✅ CRIAÇÃO DE EMPRESA AO REGISTRAR
                 if (u.getRole() == Role.EMPRESA) {
 
                     if (empresaField.getText().isBlank()) {
@@ -74,12 +100,11 @@ public class RegisterDialog extends JDialog {
                     Empresa emp = new Empresa();
                     emp.setNome(empresaField.getText());
 
-                    emp = new EmpresaDAO().save(emp); // salva empresa
+                    emp = new EmpresaDAO().save(emp);
 
-                    u.setEmpresa(emp); // relaciona
+                    u.setEmpresa(emp);
                 }
 
-                // ✅ USUÁRIO COMUM NÃO PRECISA DIGITAR EMPRESA
                 if (u.getRole() == Role.USUARIO) {
                     u.setEmpresa(null);
                 }
